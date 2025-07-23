@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score Preview</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .score-circle {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dasharray 2s ease-in-out;
+            fill: transparent;
+            stroke-width: 8;
+        }
+
+        .progress-ring__background {
+            stroke: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-ring__progress {
+            stroke: url(#gradient);
+            stroke-linecap: round;
+            stroke-dasharray: 0 628;
+            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+        }
+
+        .score-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .score-percent {
+            font-size: 1.2rem;
+            color: #a0a9c0;
+            font-weight: 600;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 50px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="score-circle">
+        <svg class="progress-ring" width="200" height="200">
+            <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#667eea"/>
+                    <stop offset="100%" stop-color="#764ba2"/>
+                </linearGradient>
+            </defs>
+            <circle class="progress-ring__circle progress-ring__background"
+                cx="100" cy="100" r="90"/>
+            <circle class="progress-ring__circle progress-ring__progress"
+                cx="100" cy="100" r="90"
+                id="progressCircle"/>
+        </svg>
+        <div class="score-content">
+            <div class="score-number" id="scoreNumber">0</div>
+            <div class="score-percent">%</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="animateScore(25)">25%</button>
+        <button onclick="animateScore(50)">50%</button>
+        <button onclick="animateScore(75)">75%</button>
+        <button onclick="animateScore(100)">100%</button>
+    </div>
+
+    <script>
+        function animateScore(targetScore) {
+            const scoreNumber = document.getElementById('scoreNumber');
+            const progressCircle = document.getElementById('progressCircle');
+            
+            const radius = 90;
+            const circumference = 2 * Math.PI * radius;
+            const strokeDasharray = (targetScore / 100) * circumference;
+            
+            // Reset to 0
+            progressCircle.style.strokeDasharray = `0 ${circumference}`;
+            scoreNumber.textContent = '0';
+            
+            // Animate the circular progress
+            setTimeout(() => {
+                progressCircle.style.strokeDasharray = `${strokeDasharray} ${circumference}`;
+            }, 100);
+            
+            // Animate the number counting up
+            let currentScore = 0;
+            const increment = targetScore / 60;
+            const timer = setInterval(() => {
+                currentScore += increment;
+                if (currentScore >= targetScore) {
+                    currentScore = targetScore;
+                    clearInterval(timer);
+                }
+                scoreNumber.textContent = Math.round(currentScore);
+            }, 33);
+        }
+    </script>
+</body>
+</html>

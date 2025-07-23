@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Analyzer - Get Your Perfect Match Score</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.12);
+            --border-color: rgba(255, 255, 255, 0.15);
+            --text-primary: #ffffff;
+            --text-secondary: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-contrast: #f8fafc;
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            --shadow-xl: 0 35px 60px -15px rgba(0, 0, 0, 0.5);
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: 
+                radial-gradient(ellipse at top left, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at top right, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom left, rgba(120, 198, 255, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #334155 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.7;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(120, 119, 198, 0.2));
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .particle:nth-child(1) { width: 4px; height: 4px; top: 10%; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 6px; height: 6px; top: 20%; left: 80%; animation-delay: 2s; }
+        .particle:nth-child(3) { width: 3px; height: 3px; top: 60%; left: 20%; animation-delay: 4s; }
+        .particle:nth-child(4) { width: 5px; height: 5px; top: 80%; left: 90%; animation-delay: 6s; }
+        .particle:nth-child(5) { width: 4px; height: 4px; top: 30%; left: 60%; animation-delay: 8s; }
+        .particle:nth-child(6) { width: 7px; height: 7px; top: 70%; left: 70%; animation-delay: 10s; }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) translateX(0px) rotate(0deg);
+                opacity: 0.7;
+            }
+            25% { 
+                transform: translateY(-20px) translateX(10px) rotate(90deg);
+                opacity: 1;
+            }
+            50% { 
+                transform: translateY(-40px) translateX(-10px) rotate(180deg);
+                opacity: 0.5;
+            }
+            75% { 
+                transform: translateY(-20px) translateX(15px) rotate(270deg);
+                opacity: 0.8;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0 32px;
+            margin-bottom: 48px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            font-size: 2.2rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 8px 0;
+        }
+
+        .nav-link:hover {
+            color: var(--text-contrast);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 64px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            text-shadow: 0 0 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.5rem;
+            color: var(--text-contrast);
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header .description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        /* Feature badges */
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin: 48px 0;
+            flex-wrap: wrap;
+        }
+
+        .feature-badge {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-contrast);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-badge:hover {
+            transform: translateY(-3px);
+            background: var(--card-bg);
+            color: var(--text-contrast);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .feature-badge i {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Main Form */
+        .main-form {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            border-radius: 28px;
+            padding: 56px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 1s ease-out 0.3s both;
+            margin-bottom: 56px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 40px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 16px;
+            font-weight: 700;
+            color: var(--text-contrast);
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group label i {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        /* File Upload Styling */
+        .file-upload-area {
+            position: relative;
+            border: 2px dashed var(--border-color);
+            border-radius: 24px;
+            padding: 48px 24px;
+            text-align: center;
+            background: var(--card-bg);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .file-upload-area:hover {
+            border-color: rgba(102, 126, 234, 0.6);
+            background: rgba(102, 126, 234, 0.08);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 48px rgba(102, 126, 234, 0.25);
+        }
+
+        .file-upload-area.dragover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.12);
+            transform: scale(1.02);
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .upload-icon {
+            font-size: 3.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-area:hover .upload-icon {
+            color: #667eea;
+            transform: scale(1.15);
+        }
+
+        .upload-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-contrast);
+            margin-bottom: 10px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-subtext {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .file-selected {
+            display: none;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 24px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(16, 185, 129, 0.15));
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 16px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .file-selected.show {
+            display: flex;
+        }
+
+        .file-selected span {
+            color: var(--text-contrast);
+            font-weight: 600;
+            flex: 1;
+        }
+
+        /* Input Fields */
+        .input-field {
+            width: 100%;
+            padding: 20px 28px;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-contrast);
+            font-size: 1.05rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            resize: none;
+            line-height: 1.6;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            background: rgba(102, 126, 234, 0.08);
+            color: var(--text-contrast);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .textarea-field {
+            min-height: 160px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        /* Character counter for textarea */
+        .char-counter {
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 22px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 35px rgba(102, 126, 234, 0.4);
+            margin-top: 24px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Loading States */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .loading-subtext {
+            color: var(--text-muted);
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .results-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        /* Score Card */
+        .score-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        .score-circle-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0 40px;
+        }
+
+        .score-circle {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dasharray 2s ease-in-out;
+            fill: transparent;
+            stroke-width: 8;
+        }
+
+        .progress-ring__background {
+            stroke: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-ring__progress {
+            stroke: url(#gradient);
+            stroke-linecap: round;
+            stroke-dasharray: 0 628;
+            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+        }
+
+        .score-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+            text-shadow: 0 2px 20px rgba(102, 126, 234, 0.3);
+            animation: countUp 2s ease-out;
+        }
+
+        .score-percent {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .score-label {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .score-description {
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Score level indicators */
+        .score-level {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 15px 0;
+        }
+
+        .score-excellent {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .score-good {
+            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .score-moderate {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .score-low {
+            background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Animated glow effect */
+        .score-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0.3;
+            }
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Enhanced gradient definitions */
+        .gradient-excellent { stop-color: #10b981; }
+        .gradient-good { stop-color: #3b82f6; }
+        .gradient-moderate { stop-color: #f59e0b; }
+        .gradient-low { stop-color: #ef4444; }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: var(--glass-bg);
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .result-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        .result-card h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-contrast);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card h3 i {
+            font-size: 1.3rem;
+        }
+
+        .matched-header {
+            color: var(--accent-green);
+        }
+
+        .suggestions-header {
+            color: var(--accent-yellow);
+        }
+
+        /* Keyword Tags with staggered animation */
+        .keyword-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+            transition: all 0.3s ease;
+            animation: slideInTag 0.6s ease-out both;
+            margin: 4px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes slideInTag {
+            from {
+                opacity: 0;
+                transform: translateY(25px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .keyword-tag:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.35);
+        }
+
+        .suggestion-tag {
+            background: var(--warning-gradient);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.25);
+        }
+
+        .suggestion-tag:hover {
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.35);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Preview Card */
+        .preview-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        .preview-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 28px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            max-height: 320px;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Error Messages */
+        .error-message {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 24px 28px;
+            border-radius: 20px;
+            margin: 24px 0;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.05rem;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .error-message i {
+            font-size: 1.3rem;
+        }
+
+        /* Success Message */
+        .success-message {
+            background: var(--success-gradient);
+            color: white;
+            padding: 24px 28px;
+            border-radius: 20px;
+            margin: 24px 0;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.05rem;
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border: 1px solid rgba(79, 172, 254, 0.3);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 100%;
+                padding: 20px;
+            }
+            
+            .main-form {
+                padding: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .nav {
+                padding: 20px 0 24px;
+                margin-bottom: 32px;
+            }
+            
+            .logo {
+                font-size: 1.6rem;
+            }
+            
+            .logo i {
+                font-size: 1.8rem;
+            }
+            
+            .header {
+                margin-bottom: 48px;
+            }
+            
+            .header h1 {
+                font-size: clamp(2rem, 8vw, 2.8rem);
+                margin-bottom: 20px;
+            }
+            
+            .header .subtitle {
+                font-size: 1.25rem;
+            }
+            
+            .header .description {
+                font-size: 1rem;
+                max-width: 100%;
+            }
+            
+            .main-form, .result-card, .preview-card, .score-card {
+                padding: 28px;
+                border-radius: 20px;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            
+            .features {
+                gap: 12px;
+                margin: 32px 0;
+            }
+            
+            .feature-badge {
+                font-size: 0.85rem;
+                padding: 10px 18px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .form-group label {
+                font-size: 1rem;
+            }
+            
+            .input-field {
+                padding: 16px 20px;
+                font-size: 1rem;
+            }
+            
+            .textarea-field {
+                min-height: 140px;
+            }
+            
+            .file-upload-area {
+                padding: 36px 20px;
+                min-height: 140px;
+            }
+            
+            .upload-icon {
+                font-size: 2.8rem;
+                margin-bottom: 16px;
+            }
+            
+            .upload-text {
+                font-size: 1.1rem;
+            }
+            
+            .upload-subtext {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .header h1 {
+                font-size: clamp(1.8rem, 10vw, 2.4rem);
+            }
+            
+            .main-form, .result-card, .preview-card, .score-card {
+                padding: 20px;
+                border-radius: 16px;
+            }
+            
+            .score-circle {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .score-number {
+                font-size: 2.2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .features {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .feature-badge {
+                width: fit-content;
+            }
+            
+            .nav {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+            
+            .logo {
+                font-size: 1.4rem;
+            }
+            
+            .results-title {
+                font-size: 2rem;
+            }
+            
+            .keyword-tag, .suggestion-tag {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .header .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .score-circle {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .score-number {
+                font-size: 1.8rem;
+            }
+            
+            .main-form {
+                padding: 16px;
+            }
+        }
+
+        /* Custom scrollbar for better UX */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--card-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Analyzing Your Resume</div>
+            <div class="loading-subtext">This may take a few moments...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-robot"></i> ResumeAI
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Features</a>
+                <a href="#" class="nav-link">How it Works</a>
+                <a href="#" class="nav-link">About</a>
+            </div>
+        </nav>
+
+        <!-- Header Section -->
+        <div class="header">
+            <h1>AI-Powered Resume Analyzer</h1>
+            <p class="subtitle">Get instant feedback and improve your job application success rate</p>
+            <p class="description">
+                Upload your resume, paste a job description, and get detailed insights with personalized recommendations 
+                to boost your chances of landing your dream job.
+            </p>
+            
+            <!-- Feature badges -->
+            <div class="features">
+                <div class="feature-badge">
+                    <i class="fas fa-brain"></i>
+                    AI-Powered Analysis
+                </div>
+                <div class="feature-badge">
+                    <i class="fas fa-chart-line"></i>
+                    Match Score
+                </div>
+                <div class="feature-badge">
+                    <i class="fas fa-lightbulb"></i>
+                    Smart Suggestions
+                </div>
+                <div class="feature-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    Privacy Protected
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <form id="analyzeForm" class="main-form" enctype="multipart/form-data">
+            <div class="form-grid">
+                <!-- File Upload -->
+                <div class="form-group">
+                    <label for="resume">
+                        <i class="fas fa-file-pdf"></i>
+                        Upload Your Resume
+                    </label>
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <input type="file" id="resume" name="resume" class="file-input" accept=".pdf" required>
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">Drop your PDF here or click to browse</div>
+                        <div class="upload-subtext">Maximum file size: 16MB • PDF format only</div>
+                    </div>
+                    <div class="file-selected" id="fileSelected">
+                        <i class="fas fa-file-pdf" style="color: #667eea;"></i>
+                        <span id="fileName">No file selected</span>
+                        <i class="fas fa-check" style="color: #4ade80;"></i>
+                    </div>
+                </div>
+
+                <!-- Company Name -->
+                <div class="form-group">
+                    <label for="company_name">
+                        <i class="fas fa-building"></i>
+                        Company Name (Optional)
+                    </label>
+                    <input 
+                        type="text" 
+                        id="company_name" 
+                        name="company_name" 
+                        class="input-field" 
+                        placeholder="e.g., Google, Microsoft, Apple..."
+                        maxlength="100"
+                    >
+                </div>
+
+                <!-- Job Description -->
+                <div class="form-group">
+                    <label for="job_description">
+                        <i class="fas fa-briefcase"></i>
+                        Job Description
+                    </label>
+                    <textarea 
+                        id="job_description" 
+                        name="job_description" 
+                        class="input-field textarea-field" 
+                        placeholder="Paste the complete job description here. Include requirements, responsibilities, and preferred qualifications for the best analysis..."
+                        required
+                        maxlength="10000"
+                    ></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span> / 10,000 characters
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <div class="btn-content">
+                        <i class="fas fa-magic"></i>
+                        <span>Analyze Resume</span>
+                    </div>
+                </button>
+            </div>
+        </form>
+
+        <!-- Error Message Container -->
+        <div id="errorMessage"></div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-section">
+            <div class="results-header">
+                <h2 class="results-title">Analysis Complete!</h2>
+            </div>
+
+            <!-- Score Card -->
+            <div class="score-card">
+                <div class="score-glow"></div>
+                <div class="score-circle-container">
+                    <div class="score-circle">
+                        <svg class="progress-ring" width="200" height="200">
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" class="gradient-start" stop-color="#667eea"/>
+                                    <stop offset="100%" class="gradient-end" stop-color="#764ba2"/>
+                                </linearGradient>
+                            </defs>
+                            <circle class="progress-ring__circle progress-ring__background"
+                                cx="100" cy="100" r="90"/>
+                            <circle class="progress-ring__circle progress-ring__progress"
+                                cx="100" cy="100" r="90"
+                                id="progressCircle"/>
+                        </svg>
+                        <div class="score-content">
+                            <div class="score-number" id="scoreNumber">0</div>
+                            <div class="score-percent">%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="score-label">Resume Match Score</div>
+                <div class="score-level" id="scoreLevel">
+                    <i class="fas fa-chart-line"></i>
+                    <span id="scoreLevelText">Analyzing...</span>
+                </div>
+                <div class="score-description" id="scoreDescription">
+                    Your resume matches the job requirements.
+                </div>
+                
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number" id="matchedCount">0</span>
+                        <div class="stat-label">Keywords Matched</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalJobKeywords">0</span>
+                        <div class="stat-label">Job Keywords</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalResumeKeywords">0</span>
+                        <div class="stat-label">Resume Keywords</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div class="results-grid">
+                <!-- Matched Keywords -->
+                <div class="result-card">
+                    <h3 class="matched-header">
+                        <i class="fas fa-check-circle"></i>
+                        Matched Keywords
+                    </h3>
+                    <div class="keywords-container" id="matchedKeywords">
+                        <!-- Keywords will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Suggested Keywords -->
+                <div class="result-card">
+                    <h3 class="suggestions-header">
+                        <i class="fas fa-lightbulb"></i>
+                        Keywords to Add
+                    </h3>
+                    <div class="keywords-container" id="suggestedKeywords">
+                        <!-- Suggestions will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resume Preview -->
+            <div class="preview-card">
+                <h3>
+                    <i class="fas fa-eye"></i>
+                    Resume Preview
+                </h3>
+                <div class="preview-content" id="resumePreview">
+                    <!-- Preview text will be populated here -->
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="#" class="action-btn btn-primary" onclick="window.location.reload()">
+                    <i class="fas fa-redo"></i>
+                    Analyze Another Resume
+                </a>
+                <a href="#" class="action-btn btn-secondary" onclick="downloadReport()">
+                    <i class="fas fa-download"></i>
+                    Download Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Character counter for textarea
+        const jobDescTextarea = document.getElementById('job_description');
+        const charCount = document.getElementById('charCount');
+
+        jobDescTextarea.addEventListener('input', function() {
+            const count = this.value.length;
+            charCount.textContent = count;
+            
+            if (count > 8000) {
+                charCount.style.color = '#ef4444';
+            } else if (count > 6000) {
+                charCount.style.color = '#f59e0b';
+            } else {
+                charCount.style.color = 'var(--text-muted)';
+            }
+        });
+
+        // File upload handling
+        const fileInput = document.getElementById('resume');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileSelected = document.getElementById('fileSelected');
+        const fileName = document.getElementById('fileName');
+
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                fileName.textContent = file.name;
+                fileSelected.classList.add('show');
+                fileUploadArea.style.borderColor = '#4ade80';
+                fileUploadArea.style.background = 'rgba(74, 222, 128, 0.05)';
+            } else {
+                fileSelected.classList.remove('show');
+                fileUploadArea.style.borderColor = 'var(--border-color)';
+                fileUploadArea.style.background = 'var(--card-bg)';
+            }
+        });
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileUploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileUploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileUploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            fileUploadArea.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            fileUploadArea.classList.remove('dragover');
+        }
+
+        fileUploadArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0 && files[0].type === 'application/pdf') {
+                fileInput.files = files;
+                fileName.textContent = files[0].name;
+                fileSelected.classList.add('show');
+                fileUploadArea.style.borderColor = '#4ade80';
+                fileUploadArea.style.background = 'rgba(74, 222, 128, 0.05)';
+            }
+        }
+
+        // Click to upload
+        fileUploadArea.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        // Form submission
+        document.getElementById('analyzeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const resultsSection = document.getElementById('resultsSection');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Reset UI
+            submitBtn.disabled = true;
+            submitBtn.querySelector('.btn-content span').textContent = 'Analyzing...';
+            submitBtn.querySelector('.btn-content i').className = 'fas fa-spinner fa-spin';
+            loadingOverlay.style.display = 'flex';
+            resultsSection.style.display = 'none';
+            errorMessage.innerHTML = '';
+            
+            fetch('/analyze', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingOverlay.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.querySelector('.btn-content span').textContent = 'Analyze Resume';
+                submitBtn.querySelector('.btn-content i').className = 'fas fa-magic';
+                
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showResults(data);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loadingOverlay.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.querySelector('.btn-content span').textContent = 'Analyze Resume';
+                submitBtn.querySelector('.btn-content i').className = 'fas fa-magic';
+                showError('An unexpected error occurred. Please try again.');
+            });
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    ${message}
+                </div>
+            `;
+        }
+
+        function showResults(data) {
+            // Animate score with circular progress
+            const scoreNumber = document.getElementById('scoreNumber');
+            const scoreDescription = document.getElementById('scoreDescription');
+            const scoreLevel = document.getElementById('scoreLevel');
+            const scoreLevelText = document.getElementById('scoreLevelText');
+            const progressCircle = document.getElementById('progressCircle');
+            const gradientStart = document.querySelector('.gradient-start');
+            const gradientEnd = document.querySelector('.gradient-end');
+            
+            const score = Math.round(data.score);
+            const radius = 90;
+            const circumference = 2 * Math.PI * radius;
+            const strokeDasharray = (score / 100) * circumference;
+            
+            // Set initial state
+            progressCircle.style.strokeDasharray = `0 ${circumference}`;
+            
+            // Animate the circular progress
+            setTimeout(() => {
+                progressCircle.style.strokeDasharray = `${strokeDasharray} ${circumference}`;
+            }, 500);
+            
+            // Animate the number counting up
+            let currentScore = 0;
+            const increment = score / 60; // 60 frames for smooth animation
+            const timer = setInterval(() => {
+                currentScore += increment;
+                if (currentScore >= score) {
+                    currentScore = score;
+                    clearInterval(timer);
+                }
+                scoreNumber.textContent = Math.round(currentScore);
+            }, 33); // ~30fps
+            
+            // Update colors and level based on score
+            let levelClass, levelText, levelIcon, gradientColors;
+            
+            if (score >= 80) {
+                levelClass = 'score-excellent';
+                levelText = 'Excellent Match';
+                levelIcon = 'fas fa-trophy';
+                gradientColors = ['#10b981', '#34d399'];
+                scoreDescription.textContent = 'Outstanding! Your resume aligns exceptionally well with the job requirements.';
+            } else if (score >= 60) {
+                levelClass = 'score-good';
+                levelText = 'Good Match';
+                levelIcon = 'fas fa-thumbs-up';
+                gradientColors = ['#3b82f6', '#60a5fa'];
+                scoreDescription.textContent = 'Great job! Your resume shows good alignment. Consider adding suggested keywords.';
+            } else if (score >= 40) {
+                levelClass = 'score-moderate';
+                levelText = 'Moderate Match';
+                levelIcon = 'fas fa-balance-scale';
+                gradientColors = ['#f59e0b', '#fbbf24'];
+                scoreDescription.textContent = 'Good foundation! Your resume would benefit from incorporating more relevant keywords.';
+            } else {
+                levelClass = 'score-low';
+                levelText = 'Needs Improvement';
+                levelIcon = 'fas fa-exclamation-triangle';
+                gradientColors = ['#ef4444', '#f87171'];
+                scoreDescription.textContent = 'Consider tailoring your resume more closely to match the job requirements.';
+            }
+            
+            // Update gradient colors
+            gradientStart.setAttribute('stop-color', gradientColors[0]);
+            gradientEnd.setAttribute('stop-color', gradientColors[1]);
+            
+            // Update level indicator
+            scoreLevel.className = `score-level ${levelClass}`;
+            scoreLevel.innerHTML = `<i class="${levelIcon}"></i><span>${levelText}</span>`;
+            
+            // Update statistics with animation
+            animateStatNumber('matchedCount', data.matched_count);
+            animateStatNumber('totalJobKeywords', data.total_job_keywords);
+            animateStatNumber('totalResumeKeywords', data.total_resume_keywords);
+            
+            // Display matched keywords
+            const matchedDiv = document.getElementById('matchedKeywords');
+            if (data.matched_keywords.length > 0) {
+                matchedDiv.innerHTML = data.matched_keywords
+                    .map((keyword, index) => {
+                        return `<span class="keyword-tag" style="animation-delay: ${index * 0.1}s">${keyword}</span>`;
+                    })
+                    .join('');
+            } else {
+                matchedDiv.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>No matching keywords found. Consider reviewing the job description.</p>
+                    </div>
+                `;
+            }
+            
+            // Display suggested keywords
+            const suggestedDiv = document.getElementById('suggestedKeywords');
+            if (data.suggestions.length > 0) {
+                suggestedDiv.innerHTML = data.suggestions
+                    .map((keyword, index) => {
+                        return `<span class="keyword-tag suggestion-tag" style="animation-delay: ${index * 0.1}s">${keyword}</span>`;
+                    })
+                    .join('');
+            } else {
+                suggestedDiv.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <p>Excellent! Your resume already contains most relevant keywords.</p>
+                    </div>
+                `;
+            }
+            
+            // Display resume preview
+            document.getElementById('resumePreview').textContent = data.resume_preview;
+            
+            // Show results section with staggered animation
+            resultsSection.style.display = 'block';
+            resultsSection.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+
+            // Add success message
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = `
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    Analysis completed successfully! Review your results below.
+                </div>
+            `;
+        }
+
+        function animateStatNumber(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            let currentValue = 0;
+            const increment = targetValue / 50;
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= targetValue) {
+                    currentValue = targetValue;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.round(currentValue);
+            }, 40);
+        }
+
+        function downloadReport() {
+            // This would implement report download functionality
+            alert('Report download feature coming soon!');
+        }
+
+        // Add smooth scrolling for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add loading animation on page load
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

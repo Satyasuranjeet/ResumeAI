@@ -1,0 +1,30 @@
+# Development files
+*.pyc
+__pycache__/
+.env
+.venv
+env/
+venv/
+temp/
+
+# Local files
+uploads/
+*.pdf
+output.txt
+file.pdf
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Original app file (we use api/index.py for Vercel)
+app.py
